@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dishes</title>
+</head>
+<body>
+
+<h1>All Dishes</h1>
+
+<div th:if="${error}">
+    <h3 style="color:red" th:text="${error}"></h3>
+</div>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Dish ID</th>
+        <th>Name</th>
+        <th>Cuisine</th>
+        <th>Preparation Time (min)</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <tr th:each="dish : ${dishes}">
+        <td th:text="${dish.dishId}"></td>
+        <td th:text="${dish.name}"></td>
+        <td th:text="${dish.cuisine}"></td>
+        <td th:text="${dish.preparationTime}"></td>
+        <td>
+            <a th:href="@{'/dishes/dish-form/' + ${dish.id}}">Edit</a>
+            &nbsp;|&nbsp;
+            <a th:href="@{'/dishes/delete/' + ${dish.id}}"
+               onclick="return confirm('Are you sure?')">Delete</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<br>
+
+<a href="/dishes/dish-form">
+    <button>Add New Dish</button>
+</a>
+
+</body>
+</html>
