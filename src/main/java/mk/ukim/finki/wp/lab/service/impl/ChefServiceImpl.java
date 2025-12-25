@@ -2,8 +2,8 @@ package mk.ukim.finki.wp.lab.service.impl;
 
 import mk.ukim.finki.wp.lab.model.Chef;
 import mk.ukim.finki.wp.lab.model.Dish;
-import mk.ukim.finki.wp.lab.repository.impl.InMemoryChefRepository;
-import mk.ukim.finki.wp.lab.repository.impl.InMemoryDishRepository;
+import mk.ukim.finki.wp.lab.repository.jpa.ChefRepository;
+import mk.ukim.finki.wp.lab.repository.jpa.DishRepository;
 import mk.ukim.finki.wp.lab.service.ChefService;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.List;
 @Service
 public class ChefServiceImpl implements ChefService {
 
-    private InMemoryChefRepository chefRepository;
-    private InMemoryDishRepository dishRepository;
+    private final ChefRepository chefRepository;
+    private final DishRepository dishRepository;
 
-    public ChefServiceImpl(InMemoryChefRepository chefRepository, InMemoryDishRepository dishRepository) {
+    public ChefServiceImpl(ChefRepository chefRepository, DishRepository dishRepository) {
         this.chefRepository = chefRepository;
         this.dishRepository = dishRepository;
     }
@@ -30,13 +30,14 @@ public class ChefServiceImpl implements ChefService {
     }
 
     @Override
-    public Chef addDishToChef(Long chefId, String dishId) {
-        Chef chef = chefRepository.findById(chefId).orElse(null);
-        Dish dish = dishRepository.findByDishId(dishId);
-        if (chef != null && dish != null) {
-            chef.getDishes().add(dish);
-            chefRepository.save(chef);
-        }
-        return chef;
+    public void addDishToChef(Long chefId, String dishId) {
+        Chef chef = chefRepository.findById(chefId)
+                .orElseThrow(() -> new RuntimeException("Chef not found"));
+        Dish dish = dishRepository.findByDishId(dishId)
+                .orElseThrow(() -> new RuntimeException("Dish not found"));
+
+        chef.getDishes().add(dish);   // додај го јадењето на листата на јадења на готвачот
+        dish.setChef(chef);           // поврзи го јадењето со готвачот
+        chefRepository.save(chef);    // зачувај го готвачот
     }
 }

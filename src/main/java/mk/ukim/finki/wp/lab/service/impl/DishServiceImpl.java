@@ -1,20 +1,18 @@
 package mk.ukim.finki.wp.lab.service.impl;
 
 import mk.ukim.finki.wp.lab.model.Dish;
-import mk.ukim.finki.wp.lab.repository.impl.InMemoryChefRepository;
-import mk.ukim.finki.wp.lab.repository.impl.InMemoryDishRepository;
+import mk.ukim.finki.wp.lab.repository.jpa.DishRepository;
 import mk.ukim.finki.wp.lab.service.DishService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
 public class DishServiceImpl implements DishService {
-    private InMemoryDishRepository dishRepository;
+    private final DishRepository dishRepository;
 
-    public DishServiceImpl(InMemoryDishRepository dishRepository) {
+    public DishServiceImpl(DishRepository dishRepository) {
         this.dishRepository = dishRepository;
     }
-
     @Override
     public List<Dish> listDishes() {
         return dishRepository.findAll();
@@ -22,7 +20,13 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public Dish findByDishId(String dishId) {
-        return dishRepository.findByDishId(dishId);
+        return dishRepository.findByDishId(dishId)
+                .orElseThrow(() -> new RuntimeException("Dish not found"));
+    }
+
+    @Override
+    public List<Dish> listDishesByChef(Long chefId) {
+        return dishRepository.findAllByChef_Id(chefId);
     }
 
     @Override

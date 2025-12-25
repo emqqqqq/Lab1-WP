@@ -1,42 +1,54 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Dish Form</title>
+    <title th:text="${dish != null} ? 'Edit Dish' : 'Add New Dish'">Dish Form</title>
 </head>
 <body>
 
-<h1 th:if="${dish == null}">Add New Dish</h1>
-<h1 th:if="${dish != null}">Edit Dish</h1>
+<h1 th:text="${dish != null} ? 'Edit Dish' : 'Add New Dish'">Dish Form</h1>
 
-<form th:method="post"
-      th:action="${dish == null} ? '/dishes/add' : '/dishes/edit/' + ${dish.id}">
+<form th:action="${dish != null} ? @{'/dishes/edit/' + ${dish.id}} : @{/dishes/add}" method="post">
+    <div>
+        <label for="dishId">Dish ID:</label>
+        <input type="text" id="dishId" name="dishId" th:value="${dish != null} ? ${dish.dishId} : ''" required>
+    </div>
 
-    <label>Dish ID:</label><br>
-    <input type="text" name="dishId"
-           th:value="${dish != null} ? ${dish.dishId} : ''" required>
-    <br><br>
+    <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" th:value="${dish != null} ? ${dish.name} : ''" required>
+    </div>
 
-    <label>Name:</label><br>
-    <input type="text" name="name"
-           th:value="${dish != null} ? ${dish.name} : ''" required>
-    <br><br>
+    <div>
+        <label for="cuisine">Cuisine:</label>
+        <input type="text" id="cuisine" name="cuisine" th:value="${dish != null} ? ${dish.cuisine} : ''" required>
+    </div>
 
-    <label>Cuisine:</label><br>
-    <input type="text" name="cuisine"
-           th:value="${dish != null} ? ${dish.cuisine} : ''" required>
-    <br><br>
+    <div>
+        <label for="preparationTime">Preparation Time (min):</label>
+        <input type="number" id="preparationTime" name="preparationTime" th:value="${dish != null} ? ${dish.preparationTime} : ''" required>
+    </div>
 
-    <label>Preparation Time (min):</label><br>
-    <input type="number" name="preparationTime"
-           th:value="${dish != null} ? ${dish.preparationTime} : ''" required>
-    <br><br>
+    <div>
+        <label for="chef">Chef:</label>
+        <select id="chef" name="chefId" required>
+            <option th:each="chef : ${chefs}"
+                    th:value="${chef.id}"
+                    th:text="${chef.firstName} + ' ' + ${chef.lastName}"
+                    th:selected="${dish != null} ? ${chef.id} == ${dish.chef.id} : false">
+            </option>
+        </select>
+    </div>
 
-    <button type="submit">Save</button>
+    <div>
+        <button type="submit" th:text="${dish != null} ? 'Update Dish' : 'Add Dish'">Submit</button>
+        <a href="/dishes">Cancel</a>
+    </div>
 </form>
 
-<br>
-<a href="/dishes">Back to List</a>
+<div th:if="${#authorization.expression('isAuthenticated()')}">
+    <a href="/logout">Logout</a>
+</div>
 
 </body>
 </html>

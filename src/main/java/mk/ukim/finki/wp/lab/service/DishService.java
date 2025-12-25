@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface DishService {
     List<Dish> listDishes();
+    List<Dish> listDishesByChef(Long chefId);
     Dish findByDishId(String dishId);
     Dish findById(Long id);
     Dish create(String dishId, String name, String cuisine, int preparationTime);
